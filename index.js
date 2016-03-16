@@ -27,7 +27,10 @@ function WebFlight (options) {
   // htmlOutput: location and name for rebuilt html file
   // route: route to redirect
 WebFlight.prototype.start = function () {
+  //originalHtmlString is going to be holding a long html string
+  //NOTE: stringifyHtml will be taking in either one path or an array of paths
   const originalHtmlString = stringifyHtml(this.originalHtml)
+  //FILESFOLDER!!! is a path to a folder. What is FILESROUTE!!! (server routes). Files routes is either one path or an array of paths
   const filesObj = makeFilesObj(this.filesFolder, this.filesRoute)
 
 
