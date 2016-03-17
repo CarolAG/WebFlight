@@ -12,21 +12,25 @@ const writeNewHtml = require('./lib/writeNewHtml')
 const botGenerator = require(('./src/botGenerator'))
 
 function WebFlight (options) {
+  //🎈are we putting all this info on the window?
   Object.keys(options).forEach((key) => {
     this[key] = options[key]
   })
 
-//Object.keys is creating an array of the keys in routes, the keys are paths ->['/about.html']
-//so map's parameter is file but more accurately it should be serverpath
-  let fileNamesArr = Object.keys(this.routes).map((file) => {
-    return path.basename(file, '.html')
-  }) //['about']
+  let fileNamesArr = (() => {
+    let fileArray = []
+    for (let route in this.routes) {
+      fileArray.push(path.basename(this.routes[route], '.html'))
+    }
+    return fileArray
+  })() //['about']
+
 
   this.count = 0  // non-configurable
-  this.fileNames = fileNamesArr // non-configurable
+  this.fileNames = fileNamesArr  // non-configurable
+  this.wfPath = options.wfPath ? options.wfPath : (__dirname + '/wfPath')  // default
+  this.wfRoute = options.wfRoute ? options.wfRoute : ('/wfRoute')  // default
 
-  this.wfPath = options.wfPath ? 'options.wfPath' : (__dirname + '/wfPath')  // default
-  this.wfRoute = options.wfRoute ? 'options.wfRoute' : ('/wfRoute')  // default
 
   this.seedScript = options.seedScript  // default
   ? options.seedScript
@@ -43,25 +47,35 @@ function WebFlight (options) {
       return `${this.wfPath}/wf-${file}.html`
     })
   })()
+
+  this.userCount = options.userCount ? options.userCount : 10  // default (redirect)
+  this.prepCount = Math.floor(this.userCount * 0.75)  // non-configurable (start bots)
+  this.stopCount = Math.floor(this.userCount * 0.50)  // non-configurable (kill bots, redirect back)
+
+  if (!this.siteUrl) console.error('Error: WebFlight options object requires "siteUrl" property')
+  if (!this.assetsPath) console.error('Error: WebFlight options object requires "assetsPath" property')
+  if (!this.assetsRoute) console.error('Error: WebFlight options object requires "assetsRoute" property')
+  if (!this.routes) console.error('Error: WebFlight options object requires "routes" property')
 }
 
 // options :: Object
-  // siteUrl: String                (required)
+  // siteUrl: String            (required)
   // assetsPath: String|Array   (required)
   // assetsRoute: String|Array  (required)
+  // routes: Object             (required)
+  // userCount: Number          (optional - defaults to 10)
   // wfPath: String             (optional - defaults to '/wfPath')
   // wfRoute: String            (optional - defaults to '/wfRoute')
   // seedScript: String         (optional - defaults to 'wf-seed.js')
-  // routes: Object             (required)
 
+  //  siteUrl: ''
   //  assetsPath: ''/['', ''],
   //  assetsRoute: ''/['', ''],
+  //  routes: {'/about.html': 'path/to/about.html'}
+  //  userCount: 10
   //  wfPath: ''/Default(__dirname + '/wfPath'),
   //  wfRoute: ''/Default('/wfRoute'),
   //  seedScript: ''/Default('wf-seed.js'),
-  //  routes: {
-  //    '/about.html': 'path/to/about.html'
-  //  }
 
 WebFlight.prototype.start = function () {
   //originalHtmlString is going to be holding a long html string
@@ -74,6 +88,7 @@ WebFlight.prototype.start = function () {
                                                                   //                  '/images/puppy.jpg':{fileOnServer: 'projectName/images/puppy.jpg'}
                                                                   //
   hashFilesObj(filesObj)
+
   //this is a chain a promises. How does a chain of promises work? the next .then function gets called
   //only after the previous one has finished.
   //the function inside the .then is also passed and argument here, this is why we're doing a .bind.
@@ -89,6 +104,7 @@ WebFlight.prototype.start = function () {
     .then(writeNewHtml.bind(null, this.htmlOutput))
     .then(botGenerator.bind(null, this))
 }
+
 
 //the redirect function will live inside a watch function that we've not yet created.
 //The watch function will be constantly watching/keeping count of  how many people have requested from the server.
