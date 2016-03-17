@@ -15,26 +15,65 @@ function WebFlight (options) {
   Object.keys(options).forEach((key) => {
     this[key] = options[key]
   })
-  this.count = 0
+
+  let fileNamesArr = Object.keys(this.routes).map((file) => {
+    return path.basename(file, '.html')
+  })
+
+  this.count = 0  // non-configurable
+  this.fileNames = fileNamesArr // non-configurable
+
+  this.wfPath = options.wfPath ? 'options.wfPath' : (__dirname + '/wfPath')  // default
+  this.wfRoute = options.wfRoute ? 'options.wfRoute' : ('/wfRoute')  // default
+
+  this.seedScript = options.seedScript  // default
+  ? options.seedScript
+  : path.join(__dirname, 'wfPath/js/wf-seed.js')
+
+  this.jsOutputDL = (() => {  // non-configurable
+    return fileNamesArr.map((file) => {
+      return `${this.wfPath}/js/${file}-download.js`
+    })
+  })()
+
+  this.htmlOutput = (() => {  // non-configurable
+    return fileNamesArr.map((file) => {
+      return `${this.wfPath}/wf-${file}.html`
+    })
+  })()
 }
 
 // options :: Object
-  // originalHtml: .html file to be rebuilt
-  // filesFolder: folder with files to be torrented
-  // filesRoute: path on the server for files
-  // jsOutputDL: location and name for webflight.js file
-  // jsOutputUL: location and name for file seeding torrents
-  // htmlOutput: location and name for rebuilt html file
-  // route: route to redirect
+  // siteUrl: String                (required)
+  // assetsPath: String|Array   (required)
+  // assetsRoute: String|Array  (required)
+  // wfPath: String             (optional - defaults to '/wfPath')
+  // wfRoute: String            (optional - defaults to '/wfRoute')
+  // seedScript: String         (optional - defaults to 'wf-seed.js')
+  // routes: Object             (required)
+
+  //  assetsPath: ''/['', ''],
+  //  assetsRoute: ''/['', ''],
+  //  wfPath: ''/Default(__dirname + '/wfPath'),
+  //  wfRoute: ''/Default('/wfRoute'),
+  //  seedScript: ''/Default('wf-seed.js'),
+  //  routes: {
+  //    '/about.html': 'path/to/about.html'
+  //  }
+
 WebFlight.prototype.start = function () {
   //originalHtmlString is going to be holding a long html string
   //NOTE: stringifyHtml will be taking in either one path or an array of paths
   const originalHtmlString = stringifyHtml(this.originalHtml)
+<<<<<<< HEAD
   //FILESFOLDER!!! is a path to a folder. What is FILESROUTE!!! (server routes). Files routes is either one path or an array of paths
   const filesObj = makeFilesObj(this.filesFolder, this.filesRoute) // -> //filesObj = {[serverRoute]+🎈(Q about '/' in between these two things)[fileName]:{fileOnServer:[absolutepath]+[fileName]},
                                                                   //                  '/images/kitten.jpg':{fileOnServer: 'projectName/images/kitten.jpg'},
                                                                   //                  '/images/puppy.jpg':{fileOnServer: 'projectName/images/puppy.jpg'}
                                                                   //
+=======
+  const filesObj = makeFilesObj(this.filesFolder, this.filesRoute)
+>>>>>>> 52c1b59acebfaf021f0f1a71fdc7de3535d0b5e1
 
   hashFilesObj(filesObj)
   //this is a chain a promises. How does a chain of promises work? the next .then function gets called
