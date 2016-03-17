@@ -53,7 +53,9 @@ WebFlight.prototype.start = function () {
     .then(botGenerator.bind(null, this))
 }
 
-//the redirect function will live inside a watch function that we've not yet created
+//the redirect function will live inside a watch function that we've not yet created.
+//The watch function will be constantly watching/keeping count of  how many people have requested from the server.
+//This count is being used in order to start the bots and then trigger the redirect once the bots are 'turned on' and seeding
 WebFlight.prototype.redirect = function (req, res, next) {
   const destination = req.originalUrl
 
