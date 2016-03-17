@@ -31,10 +31,21 @@ WebFlight.prototype.start = function () {
   //NOTE: stringifyHtml will be taking in either one path or an array of paths
   const originalHtmlString = stringifyHtml(this.originalHtml)
   //FILESFOLDER!!! is a path to a folder. What is FILESROUTE!!! (server routes). Files routes is either one path or an array of paths
-  const filesObj = makeFilesObj(this.filesFolder, this.filesRoute)
-
+  const filesObj = makeFilesObj(this.filesFolder, this.filesRoute) // -> //filesObj = {[serverRoute]+🎈(Q about '/' in between these two things)[fileName]:{fileOnServer:[absolutepath]+[fileName]},
+                                                                  //                  '/images/kitten.jpg':{fileOnServer: 'projectName/images/kitten.jpg'},
+                                                                  //                  '/images/puppy.jpg':{fileOnServer: 'projectName/images/puppy.jpg'}
+                                                                  //
 
   hashFilesObj(filesObj)
+  //this is a chain a promises. How does a chain of promises work? the next .then function gets called
+  //only after the previous one has finished.
+  //the function inside the .then is also passed and argument here, this is why we're doing a .bind.
+  //The first arg in the .bind is null and the second argument inside .bind() is the FIRST argument that is passed
+  //to the function being passed inside of .then.
+  //for example the first .then() is being passed the fnuc writeJsDL an the the first arg being given to it
+  //is jsOutputDL.
+  //One more thing for this first function the other arg being passed to it is the return of hashFilesObj(filesObj) // -> which is the hashedObj.
+  //So to conclude writeJsDL(this.jsOutputDL, hashedObj)
     .then(writeJsDL.bind(null, this.jsOutputDL))
     .then(writeJsUL.bind(null, this.jsOutputUL))
     .then(replaceHtml.bind(null, originalHtmlString, path.basename(this.jsOutputDL)))
@@ -42,6 +53,7 @@ WebFlight.prototype.start = function () {
     .then(botGenerator.bind(null, this))
 }
 
+//the redirect function will live inside a watch function that we've not yet created
 WebFlight.prototype.redirect = function (req, res, next) {
   const destination = req.originalUrl
 
