@@ -16,9 +16,11 @@ function WebFlight (options) {
     this[key] = options[key]
   })
 
+//Object.keys is creating an array of the keys in routes, the keys are paths ->['/about.html']
+//so map's parameter is file but more accurately it should be serverpath
   let fileNamesArr = Object.keys(this.routes).map((file) => {
     return path.basename(file, '.html')
-  })
+  }) //['about']
 
   this.count = 0  // non-configurable
   this.fileNames = fileNamesArr // non-configurable
@@ -65,16 +67,12 @@ WebFlight.prototype.start = function () {
   //originalHtmlString is going to be holding a long html string
   //NOTE: stringifyHtml will be taking in either one path or an array of paths
   const originalHtmlString = stringifyHtml(this.originalHtml)
-<<<<<<< HEAD
+
   //FILESFOLDER!!! is a path to a folder. What is FILESROUTE!!! (server routes). Files routes is either one path or an array of paths
   const filesObj = makeFilesObj(this.filesFolder, this.filesRoute) // -> //filesObj = {[serverRoute]+🎈(Q about '/' in between these two things)[fileName]:{fileOnServer:[absolutepath]+[fileName]},
                                                                   //                  '/images/kitten.jpg':{fileOnServer: 'projectName/images/kitten.jpg'},
                                                                   //                  '/images/puppy.jpg':{fileOnServer: 'projectName/images/puppy.jpg'}
                                                                   //
-=======
-  const filesObj = makeFilesObj(this.filesFolder, this.filesRoute)
->>>>>>> 52c1b59acebfaf021f0f1a71fdc7de3535d0b5e1
-
   hashFilesObj(filesObj)
   //this is a chain a promises. How does a chain of promises work? the next .then function gets called
   //only after the previous one has finished.
