@@ -111,7 +111,7 @@ WebFlight.prototype.start = function () {
 //This count is being used in order to start the bots and then trigger the redirect once the bots are 'turned on' and seeding
 WebFlight.prototype.redirect = function (req, res, next) {
   const destination = req.originalUrl
-
+  //Note that req.originalUrl in a middleware function is a combination of req.baseUrl and req.path. ex. /admin/new
   if (destination === '/count.check.4wf') {
     res.send({count: this.count})
   }
@@ -129,7 +129,9 @@ WebFlight.prototype.redirect = function (req, res, next) {
       }.bind(this), 10000)
     })
   }
-
+    //this.route or this.routes and isn't route(s) and obj?
+    //basename = Return the last portion of a path. Similar to the Unix basename command. ex. about.html
+    //extname = .html
   if (destination === this.route || (!path.extname(req.originalUrl) && destination === path.basename(req.originalUrl))) {
     res.sendFile(this.htmlOutput)
   } else {
