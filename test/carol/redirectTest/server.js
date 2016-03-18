@@ -11,7 +11,7 @@ const wfObj = {
   // jsOutputDL: path.join(__dirname, 'webflight.js'),
   // jsOutputUL: path.join(__dirname, 'wf/seedUL.js'),
   // htmlOutput: path.join(__dirname, 'wf/index.html'),
-  routes: {'/':'index.html'}
+  routes: {'/':'sample.html'}
   // redirectTo: '/wf/'
 }
 
@@ -36,7 +36,7 @@ const wfObj = {
 
 
 const wf = new WebFlight(wfObj)
-
+console.log('wf', wf);
 wf.start()
 
 app.use(wf.redirect.bind(wf))
