@@ -67,7 +67,6 @@ function WebFlight (options, serverRoot) {
     //if it's ejs
   } else if (path.extname(this.routes[file]) == '.ejs'){
       file = path.basename(this.routes[file], '.ejs')
-      //🎈Double check that it's -download.js not .ejs
       return `${this.wfPath}/js/${file}-download.js`
 
     }
@@ -85,7 +84,7 @@ function WebFlight (options, serverRoot) {
   this.stopCount = Math.floor(this.userCount * 0.50)  // non-configurable (kill bots, redirect back)
 
   this.statusBar = options.statusBar || true // default
-  console.log('wfobj', this)
+  //console.log('wfobj', this)
 
   if (!this.siteUrl) console.error('Error: WebFlight options object requires "siteUrl" property')
   if (!this.assetsPath) console.error('Error: WebFlight options object requires "assetsPath" property')
@@ -124,12 +123,12 @@ WebFlight.prototype.init = function () {
     const filesObj = makeFilesObj(this.assetsPath, this.assetsRoute)
 
     hashFilesObj(filesObj)
-
     .then(writeJsUL.bind(null, this.seedScript, this.siteUrl, this.stopCount))
     .then(replaceHtml.bind(null, htmlStrings, htmlFiles))
     .then(addStatusBar.bind(null))
     .then(writeNewHtml.bind(null, this.htmlOutput))
-  } else {
+
+  } else { // BELOW: previous version
     const htmlFiles = Object.keys(this.routes).map((route) => {
       return this.routes[route]
     })
